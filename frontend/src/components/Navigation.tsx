@@ -1,9 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const Navigation: React.FC = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   return (
     <nav className="bg-blue-600 text-white shadow-lg">
@@ -16,17 +22,11 @@ const Navigation: React.FC = () => {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-                <Link
-                  to="/dashboard"
-                  className="text-blue-100 hover:text-white transition-colors"
-                >
-                  Dashboard
-                </Link>
                 <span className="text-blue-100">
                   Welcome, {user.username}
                 </span>
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="bg-blue-700 hover:bg-blue-800 px-3 py-1 rounded transition-colors"
                 >
                   Logout

@@ -1,93 +1,87 @@
 # Expense Tracker
 
-A full-stack expense tracking application built with FastAPI (Python) backend, React TypeScript frontend, and PostgreSQL database.
+A full-stack expense tracking application built with FastAPI (Python), React TypeScript, and PostgreSQL. Features comprehensive expense management, income tracking, and financial analytics with interactive charts.
+
+## Features
+
+- User authentication with JWT tokens
+- Expense and income management with date selection
+- 20+ expense categories with visual analytics
+- Interactive pie charts and proportional bar charts
+- Monthly navigation and financial insights
+- Responsive design with Tailwind CSS
 
 ## Tech Stack
 
 - **Backend**: Python FastAPI with SQLAlchemy ORM
 - **Frontend**: React with TypeScript and Tailwind CSS
 - **Database**: PostgreSQL
-- **Container**: Docker and Docker Compose
+- **Deployment**: Docker and Docker Compose
 
-## Features
-
-- User authentication (register/login)
-- Add, edit, delete expenses
-- Categorize expenses
-- View expense history
-- Responsive web interface
-
-## Quick Start with Docker
+## Quick Start
 
 1. Clone the repository
-2. Make sure Docker and Docker Compose are installed
-3. Run the application:
+2. Run with Docker:
+   ```bash
+   docker-compose up --build
+   ```
+3. Access the application:
+   - Frontend: [http://localhost:3000](http://localhost:3000)
+   - Backend API: [http://localhost:8000](http://localhost:8000)
+   - API Documentation: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-```bash
-docker-compose up --build
+## Screenshots
+
+### Landing Page
+![Homepage](assets/homepage-hero.png)
+
+### Authentication
+| Register | Login |
+|----------|-------|
+| ![Register](assets/register.png) | ![Login](assets/login.png) |
+
+### Dashboard
+![Dashboard Overview](assets/dashboard-overview.png)
+
+![Dashboard Details](assets/dashboard-details.png)
+
+### Expense Management
+| Add Expense | Add Income |
+|-------------|------------|
+| ![Add Expense](assets/add-expenses.png) | ![Add Salary](assets/add-salary.png) |
+
+### Analytics
+![Categories](assets/categories.png)
+
+![Charts](assets/charts.png)
+- Real-time financial insights and balance calculations
+- Beautiful, responsive web interface with Tailwind CSS
+- Smart routing with protected dashboard and public landing page
+- Month-based expense filtering and categorization
+- Edit and delete functionality for all expense entries
+
+## Quick Start
+
+1. Clone the repository
+2. Run with Docker:
+   ```bash
+   docker-compose up --build
+   ```
+3. Access the application:
+   - Frontend: [http://localhost:3000](http://localhost:3000)
+   - Backend API: [http://localhost:8000](http://localhost:8000)
+   - API Documentation: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+## Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+DATABASE_URL=postgresql://user:password@db:5432/expense_tracker
+SECRET_KEY=your-super-secure-secret-key
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```
-
-4. Access the application:
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000
-   - API Documentation: http://localhost:8000/docs
-
-## Development Setup
-
-### Backend Setup
-
-1. Navigate to the backend directory:
-```bash
-cd backend
-```
-
-2. Create a virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-4. Set up environment variables (create `.env` file):
-```bash
-DATABASE_URL=postgresql://user:password@localhost:5432/expense_tracker
-SECRET_KEY=your-secret-key-here
-```
-
-5. Run the backend:
-```bash
-uvicorn main:app --reload
-```
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-```bash
-cd frontend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Start the development server:
-```bash
-npm start
-```
-
-### Database Setup
-
-1. Install PostgreSQL locally or use Docker:
-```bash
-docker run --name postgres-db -e POSTGRES_DB=expense_tracker -e POSTGRES_USER=user -e POSTGRES_PASSWORD=password -p 5432:5432 -d postgres:15
-```
-
-2. The database will be automatically initialized with the schema when the backend starts.
 
 ## API Endpoints
 
@@ -98,50 +92,4 @@ docker run --name postgres-db -e POSTGRES_DB=expense_tracker -e POSTGRES_USER=us
 - `PUT /api/expenses/{id}` - Update an expense
 - `DELETE /api/expenses/{id}` - Delete an expense
 - `GET /api/expenses/categories/` - Get expense categories
-
-## Environment Variables
-
-### Backend
-- `DATABASE_URL` - PostgreSQL connection string
-- `SECRET_KEY` - JWT secret key for authentication
-
-### Frontend
-- `REACT_APP_API_URL` - Backend API URL (default: http://localhost:8000)
-
-## Project Structure
-
-```
-expense-tracker/
-├── backend/
-│   ├── main.py              # FastAPI application
-│   ├── models.py            # SQLAlchemy models
-│   ├── schemas.py           # Pydantic schemas
-│   ├── database.py          # Database configuration
-│   ├── requirements.txt     # Python dependencies
-│   └── routers/
-│       ├── auth.py          # Authentication routes
-│       ├── expenses.py      # Expense routes
-│       └── users.py         # User routes
-├── frontend/
-│   ├── src/
-│   │   ├── components/      # React components
-│   │   ├── pages/           # Page components
-│   │   ├── contexts/        # React contexts
-│   │   └── services/        # API services
-│   ├── package.json         # Node.js dependencies
-│   └── tailwind.config.js   # Tailwind CSS config
-├── database/
-│   └── init.sql             # Database initialization
-├── docker-compose.yml       # Docker services
-├── Dockerfile.backend       # Backend container
-├── Dockerfile.frontend      # Frontend container
-└── README.md               # This file
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+- `GET /api/salaries/` - Get user's income records

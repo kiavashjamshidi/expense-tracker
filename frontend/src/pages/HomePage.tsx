@@ -14,7 +14,7 @@ const HomePage: React.FC = () => {
             <div className="flex gap-4">
               <Link
                 to="/login"
-                className="text-blue-600 hover:text-blue-700 font-medium"
+                className="text-blue-600 hover:text-blue-700 font-medium px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors"
               >
                 Sign In
               </Link>

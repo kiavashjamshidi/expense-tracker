@@ -35,8 +35,10 @@ const Dashboard: React.FC = () => {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [expenseDate, setExpenseDate] = useState('');
   const [salaryAmount, setSalaryAmount] = useState('');
   const [salaryDescription, setSalaryDescription] = useState('');
+  const [salaryDate, setSalaryDate] = useState('');
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [editingExpense, setEditingExpense] = useState<number | null>(null);
@@ -63,7 +65,7 @@ const Dashboard: React.FC = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await fetch('/api/expenses/categories/');
+      const response = await authenticatedFetch('/api/expenses/categories/');
       if (response.ok) {
         const data = await response.json();
         setCategories(data);
@@ -77,27 +79,35 @@ const Dashboard: React.FC = () => {
     e.preventDefault();
     
     try {
+      const expenseData: any = {
+        description: description || 'Expense',
+        amount: parseFloat(amount),
+        category_id: parseInt(categoryId),
+      };
+
+      if (expenseDate) {
+        expenseData.date = expenseDate;
+      }
+
       const response = await authenticatedFetch('/api/expenses/', {
-        method: 'POST',
+        method: editingExpense ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          description: description || 'Expense',
-          amount: parseFloat(amount),
-          category_id: parseInt(categoryId),
-        }),
+        body: JSON.stringify(expenseData),
       });
 
       if (response.ok) {
         setDescription('');
         setAmount('');
         setCategoryId('');
+        setExpenseDate('');
+        setEditingExpense(null);
         setShowForm(false);
         fetchExpenses();
       }
     } catch (error) {
-      console.error('Failed to create expense:', error);
+      // Handle error silently
     }
   };
 
@@ -105,25 +115,32 @@ const Dashboard: React.FC = () => {
     e.preventDefault();
     
     try {
+      const salaryData: any = {
+        description: salaryDescription || 'Salary',
+        amount: parseFloat(salaryAmount),
+      };
+
+      if (salaryDate) {
+        salaryData.date = salaryDate;
+      }
+
       const response = await authenticatedFetch('/api/salaries/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          description: salaryDescription || 'Salary',
-          amount: parseFloat(salaryAmount),
-        }),
+        body: JSON.stringify(salaryData),
       });
 
       if (response.ok) {
         setSalaryAmount('');
         setSalaryDescription('');
+        setSalaryDate('');
         setShowSalaryForm(false);
         fetchSalaries();
       }
     } catch (error) {
-      console.error('Failed to create salary entry:', error);
+      // Handle error silently
     }
   };
 
@@ -159,6 +176,9 @@ const Dashboard: React.FC = () => {
     setDescription(expense.description || '');
     setAmount(expense.amount.toString());
     setCategoryId(expense.category.id.toString());
+    // Convert date to YYYY-MM-DD format for date input
+    const expenseDate = new Date(expense.date);
+    setExpenseDate(expenseDate.toISOString().split('T')[0]);
   };
 
   const cancelEdit = () => {
@@ -166,6 +186,7 @@ const Dashboard: React.FC = () => {
     setDescription('');
     setAmount('');
     setCategoryId('');
+    setExpenseDate('');
   };
 
   const updateExpense = async (e: React.FormEvent) => {
@@ -174,16 +195,22 @@ const Dashboard: React.FC = () => {
     if (!editingExpense) return;
 
     try {
+      const expenseData: any = {
+        description: description || 'Expense',
+        amount: parseFloat(amount),
+        category_id: parseInt(categoryId),
+      };
+
+      if (expenseDate) {
+        expenseData.date = expenseDate;
+      }
+
       const response = await authenticatedFetch(`/api/expenses/${editingExpense}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          description: description || 'Expense',
-          amount: parseFloat(amount),
-          category_id: parseInt(categoryId),
-        }),
+        body: JSON.stringify(expenseData),
       });
 
       if (response.ok) {
@@ -191,6 +218,7 @@ const Dashboard: React.FC = () => {
         setDescription('');
         setAmount('');
         setCategoryId('');
+        setExpenseDate('');
         fetchExpenses();
       }
     } catch (error) {
@@ -228,12 +256,15 @@ const Dashboard: React.FC = () => {
     const total = Object.values(categoryTotals).reduce((sum, value) => sum + value, 0);
     if (total === 0) return <div className="text-gray-500 text-center py-8">No expenses this month</div>;
 
+    // Sort categories by amount (highest to lowest)
+    const sortedCategories = Object.entries(categoryTotals).sort(([,a], [,b]) => b - a);
+    
     let cumulativePercentage = 0;
     
     return (
       <div className="flex flex-col items-center">
         <svg width="200" height="200" className="mb-4">
-          {Object.entries(categoryTotals).map(([category, amount], index) => {
+          {sortedCategories.map(([category, amount], index) => {
             const percentage = (amount / total) * 100;
             const startAngle = (cumulativePercentage / 100) * 360;
             const endAngle = ((cumulativePercentage + percentage) / 100) * 360;
@@ -266,7 +297,7 @@ const Dashboard: React.FC = () => {
           })}
         </svg>
         <div className="space-y-2">
-          {Object.entries(categoryTotals).map(([category, amount], index) => (
+          {sortedCategories.map(([category, amount], index) => (
             <div key={category} className="flex items-center space-x-2">
               <div 
                 className="w-4 h-4 rounded" 
@@ -435,6 +466,17 @@ const Dashboard: React.FC = () => {
                 placeholder="e.g., Lunch at restaurant"
               />
             </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date (optional - defaults to today)
+              </label>
+              <input
+                type="date"
+                value={expenseDate}
+                onChange={(e) => setExpenseDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
             <div className="md:col-span-2 flex gap-2">
               <button
                 type="submit"
@@ -484,6 +526,17 @@ const Dashboard: React.FC = () => {
                 onChange={(e) => setSalaryDescription(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500"
                 placeholder="e.g., Monthly salary, Freelance work"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date (optional - defaults to today)
+              </label>
+              <input
+                type="date"
+                value={salaryDate}
+                onChange={(e) => setSalaryDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-green-500 focus:border-green-500"
               />
             </div>
             <div className="md:col-span-2">

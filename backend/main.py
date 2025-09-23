@@ -9,32 +9,41 @@ models.Base.metadata.create_all(bind=database.engine)
 def create_default_categories():
     db = database.SessionLocal()
     try:
-        existing_categories = db.query(models.Category).count()
-        if existing_categories == 0:
-            default_categories = [
-                {"name": "Food", "description": "Food and dining expenses"},
-                {"name": "Transportation", "description": "Travel and commuting costs"},
-                {"name": "Entertainment", "description": "Movies, games, and fun activities"},
-                {"name": "Utilities", "description": "Electricity, water, gas bills"},
-                {"name": "Healthcare", "description": "Medical and health expenses"},
-                {"name": "Shopping", "description": "Clothing, electronics, and purchases"},
-                {"name": "Rent", "description": "Housing and accommodation costs"},
-                {"name": "Clubbing", "description": "Nightlife and club expenses"},
-                {"name": "Groceries", "description": "Food shopping and household items"},
-                {"name": "Travel", "description": "Vacation and travel expenses"},
-                {"name": "Education", "description": "Learning and educational costs"},
-                {"name": "Insurance", "description": "Insurance premiums and coverage"},
-                {"name": "Phone", "description": "Mobile and phone bills"},
-                {"name": "Internet", "description": "Internet and data services"},
-                {"name": "Gym", "description": "Fitness and gym memberships"},
-                {"name": "Other", "description": "Miscellaneous expenses"}
-            ]
-            
-            for category_data in default_categories:
+        # Get existing categories
+        existing_categories = db.query(models.Category).all()
+        existing_names = {cat.name for cat in existing_categories}
+        
+        default_categories = [
+            {"name": "Food", "description": "Food and dining expenses"},
+            {"name": "Transportation", "description": "Travel and commuting costs"},
+            {"name": "Entertainment", "description": "Movies, games, and fun activities"},
+            {"name": "Utilities", "description": "Electricity, water, gas bills"},
+            {"name": "Healthcare", "description": "Medical and health expenses"},
+            {"name": "Shopping", "description": "Clothing, electronics, and purchases"},
+            {"name": "Rent", "description": "Housing and accommodation costs"},
+            {"name": "Clubbing", "description": "Nightlife and club expenses"},
+            {"name": "Groceries", "description": "Food shopping and household items"},
+            {"name": "Travel", "description": "Vacation and travel expenses"},
+            {"name": "Education", "description": "Learning and educational costs"},
+            {"name": "Insurance", "description": "Insurance premiums and coverage"},
+            {"name": "Phone", "description": "Mobile and phone bills"},
+            {"name": "Internet", "description": "Internet and data services"},
+            {"name": "Gym", "description": "Fitness and gym memberships"},
+            {"name": "Coffee", "description": "Coffee shops and beverages"},
+            {"name": "Gas", "description": "Vehicle fuel expenses"},
+            {"name": "Books", "description": "Books and reading materials"},
+            {"name": "Subscriptions", "description": "Monthly service subscriptions"},
+            {"name": "Gifts", "description": "Presents and gift expenses"},
+            {"name": "Other", "description": "Miscellaneous expenses"}
+        ]
+        
+        # Add only categories that don't exist
+        for category_data in default_categories:
+            if category_data["name"] not in existing_names:
                 category = models.Category(**category_data)
                 db.add(category)
-            
-            db.commit()
+        
+        db.commit()
     finally:
         db.close()
 
