@@ -27,7 +27,7 @@ const Register: React.FC = () => {
     
     try {
       await register(username, email, password);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err: any) {
       if (err.message.includes('400')) {
         setError('Username or email already exists. Please try different credentials.');

@@ -9,13 +9,19 @@ const Navigation: React.FC = () => {
     <nav className="bg-blue-600 text-white shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
-          <Link to="/" className="text-xl font-bold">
+          <Link to={user ? "/dashboard" : "/"} className="text-xl font-bold">
             Expense Tracker
           </Link>
           
           <div className="flex items-center space-x-4">
             {user ? (
               <>
+                <Link
+                  to="/dashboard"
+                  className="text-blue-100 hover:text-white transition-colors"
+                >
+                  Dashboard
+                </Link>
                 <span className="text-blue-100">
                   Welcome, {user.username}
                 </span>
