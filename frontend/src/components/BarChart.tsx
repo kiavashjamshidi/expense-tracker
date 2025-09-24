@@ -29,7 +29,7 @@ const BarChart: React.FC<BarChartProps> = ({ data }) => {
               <div
                 className="h-6 rounded-full"
                 style={{
-                  width: `${(amount / scaleReference) * 100}%`,
+                  width: `${(amount / maxValue) * 100}%`,
                   backgroundColor: colors[index % colors.length],
                   minWidth: '8px'
                 }}

@@ -1,1 +1,4 @@
 .env
+thumbnail.jpeg
+assets/.DS_Store
+**/__pycache__/
